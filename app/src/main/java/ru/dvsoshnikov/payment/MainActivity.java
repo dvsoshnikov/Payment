@@ -2,27 +2,26 @@ package ru.dvsoshnikov.payment;
 
 import static ru.yoomoney.sdk.kassa.payments.Checkout.createTokenizationResult;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.Currency;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import ru.yoomoney.sdk.kassa.payments.Checkout;
 import ru.yoomoney.sdk.kassa.payments.checkoutParameters.Amount;
 import ru.yoomoney.sdk.kassa.payments.checkoutParameters.GooglePayParameters;
@@ -36,12 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
     static Integer REQUEST_CODE_TOKENIZE = 1;
 
-    private TextView  helloTv;
-    private Timer     mTimer;
-    private TimerTask mMyTimerTask;
-    private Button  helloBtn;
-    private Button  helloBtn1;
-    private Button  helloBtn2;
+    //private TextView  helloTv;
+    //private Timer     mTimer;
+    //private TimerTask mMyTimerTask;
+    static Product product;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -62,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     public MainActivity() throws UnknownHostException {
     }
     @Override
@@ -72,41 +68,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        helloBtn = findViewById(R.id.button);
-        helloBtn1 = findViewById(R.id.button3);
-        helloBtn2 = findViewById(R.id.button2);
+        Button helloBtn = findViewById(R.id.productButton1);
+        Button helloBtn1 = findViewById(R.id.productButton2);
+        Button helloBtn2 = findViewById(R.id.productButton3);
+
         helloBtn.setOnClickListener(onClickListener);
         helloBtn1.setOnClickListener(onClickListener);
         helloBtn2.setOnClickListener(onClickListener);
     }
 
-    private final View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.button:
+    @SuppressLint("NonConstantResourceId")
+    private final View.OnClickListener onClickListener = v -> {
+        switch (v.getId()) {
 
-                    BigDecimal coast1 = new BigDecimal("101.25");
-                    Product product1 = new Product(coast1,"Продукт 1", "Кросовки");
-                    showDialog (product1);
+            case R.id.productButton1:
 
-                        break;
-
-                case R.id.button2:
-
-                    BigDecimal coast2 = new BigDecimal("200");
-                    Product product2 = new Product(coast2,"Продукт 2", "Кепка спортивная");
-                    showDialog (product2);
+                BigDecimal coast1 = new BigDecimal("101.25");
+                product = new Product(coast1,"Продукт 1", "Кросовки");
+                showDialog (product);
 
                     break;
 
-                case R.id.button3:
+            case R.id.productButton2:
 
-                    BigDecimal coast3 = new BigDecimal("803.7");
-                    Product product3 = new Product(coast3,"Продукт 3", "Майка");
-                    showDialog (product3);
-                    break;
-            }
+                BigDecimal coast2 = new BigDecimal("200");
+                product = new Product(coast2,"Продукт 2", "Кепка спортивная");
+                //onFragmentSendDataListener.onSendData(product2);
+                showDialog (product);
+
+                break;
+
+            case R.id.productButton3:
+
+                BigDecimal coast3 = new BigDecimal("803.7");
+                product = new Product(coast3,"Продукт 3", "Майка");
+               // onFragmentSendDataListener.onSendData(product3);
+                showDialog (product);
+                break;
         }
     };
     void startTokenize(Product product) {
@@ -164,11 +162,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showDialog (Product product) {
-        DialogPriceFragment dialogPriceFragment = new DialogPriceFragment(product);
+
+        Bundle bundle = new Bundle();
+        bundle.putFloat("product_coast",product.getCoast().floatValue());
+        bundle.putString("product_name",product.getProductName());
+        bundle.putString("product_description",product.getProductDescription());
+
+        DialogPriceFragment dialogPriceFragment = new DialogPriceFragment();
+        dialogPriceFragment.setArguments(bundle);
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         dialogPriceFragment.show(transaction, "dialog");
     }
+
+    public static class DialogPriceFragment extends DialogFragment {
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Потверждение суммы покупки");  // заголовок
+            builder.setMessage("Сумма покупки: " + product.getCoast()); // сообщение
+            builder.setPositiveButton("Да", (dialog, id) -> (
+                    (MainActivity) requireActivity()).startTokenize(product));
+            builder.setNegativeButton("Нет", (dialog, id) -> dialog.cancel());
+            builder.setCancelable(true);
+            return builder.create();
+        }
+
+    }
+
+
+
 }
 
 

@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/productButton1"
         android:layout_width="280dp"
         android:layout_height="90dp"
         android:layout_marginStart="64dp"
@@ -19,13 +19,13 @@
         android:textSize="16sp"
         android:translationZ="5dp"
         app:cornerRadius="15dp"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintBottom_toTopOf="@+id/productButton2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.904" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/productButton2"
         android:layout_width="280dp"
         android:layout_height="90dp"
         android:layout_marginStart="64dp"
@@ -43,7 +43,7 @@
         app:layout_constraintVertical_bias="0.499" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/productButton3"
         android:layout_width="280dp"
         android:layout_height="90dp"
         android:layout_marginStart="64dp"
@@ -57,7 +57,7 @@
         app:cornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2"
+        app:layout_constraintTop_toBottomOf="@+id/productButton2"
         app:layout_constraintVertical_bias="0.09" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
